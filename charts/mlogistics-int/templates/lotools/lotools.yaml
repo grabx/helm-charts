@@ -68,7 +68,7 @@ spec:
       volumes:
         - name: shared
           persistentVolumeClaim:
-            claimName: {{ include "mlogistics.fullname" . }}-shared
+            claimName: mlogistics-shared   
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
