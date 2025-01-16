@@ -1,0 +1,44 @@
+{{- if .Values.loasfrontend.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "mlogistics.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "mlogistics.labels" . | nindent 4 }}
+  {{- with .Values.loasfrontend.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.loasfrontend.ingress.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
+  {{- if .Values.loasfrontend.ingress.tls }}
+  tls:
+    {{- range .Values.loasfrontend.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.loasfrontend.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- with .pathType }}
+            pathType: {{ . }}
+            {{- end }}
+            backend:
+              service:
+                name: svc-loas-frontend-{{ $.Values.service.suffix }}
+                port:
+                  number: {{ $.Values.loasfrontend.service.port }}
+          {{- end }}
+    {{- end }}
+{{- end }}

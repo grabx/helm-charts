@@ -1,0 +1,16 @@
+apiVersion: v2
+version: 1.1.26
+appVersion: 1.1.26
+name: mlogistics-int
+description: mLogistics@K8S
+type: application
+home: https://hub.logobject.ch/rega
+maintainers:
+- email: tiziano.mengotti@logobject.ch
+  name: Tiziano Mengotti
+- email: renzo.dani@logobject.ch
+  name: Renzo Dani
+- email: kevin.christen@grabx.ch
+  name: Kevin Christen
+sources:
+-  https://hub.logobject.ch/rega
