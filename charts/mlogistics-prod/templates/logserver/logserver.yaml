@@ -117,7 +117,7 @@ spec:
       volumes:
         - name: shared
           persistentVolumeClaim:
-            claimName: {{ include "mlogistics.fullname" . }}-shared
+            claimName: mlogistics-shared
         - name: logvol
           emptyDir: {}
       {{- with .Values.nodeSelector }}
