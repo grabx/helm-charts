@@ -23,7 +23,7 @@ spec:
             - /bin/sh
             - -c
             - |
-              echo -e "hosts {\n" > /tmp/mlog.override
+              echo "hosts {" > /tmp/mlog.override
               for pod in $(kubectl get pods -l component=loasfrontend -o jsonpath='{.items[*].status.podIP}'); do
                 pod_name=$(kubectl get pod -l component=loasfrontend -o jsonpath="{range .items[?(@.status.podIP=='${pod}')]}{.metadata.name}{end}")
                 echo "    $pod ${pod_name}.${CUSTOM_DOMAIN}" >> /tmp/mlog.override
