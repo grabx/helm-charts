@@ -48,6 +48,26 @@ spec:
             #     pod_name=$(kubectl get pod -l component=loasfrontend -o jsonpath="{range .items[?(@.status.podIP=='${pod}')]}{.metadata.name}{end}")
             #     echo "$pod $pod_name" >> /mnt/hosts
             #   done
+            # - /bin/sh
+            # - -c
+            # - |
+            #   HOSTS_FILE="/mnt/hosts"
+            #   POD_NAME=$(hostname)
+            #   POD_IP=$(hostname -i)
+
+            #   # Ensure localhost exists
+            #   if ! grep -q "127.0.0.1 localhost" "$HOSTS_FILE"; then
+            #     echo "127.0.0.1 localhost" >> "$HOSTS_FILE"
+            #   fi
+
+            #   # Check if an entry for this pod already exists, and update or append
+            #   if grep -q "$POD_NAME" "$HOSTS_FILE"; then
+            #     # Replace existing entry for this pod
+            #     sed -i "/$POD_NAME/d" "$HOSTS_FILE"
+            #   fi
+            #   # Add the current pod's IP and name to the hosts file
+            #   echo "$POD_IP $POD_NAME" >> "$HOSTS_FILE"
+
             - /bin/sh
             - -c
             - |
@@ -57,16 +77,18 @@ spec:
 
               # Ensure localhost exists
               if ! grep -q "127.0.0.1 localhost" "$HOSTS_FILE"; then
-                echo "127.0.0.1 localhost" >> "$HOSTS_FILE"
+                echo "127.0.0.1 localhost" > "$HOSTS_FILE"
               fi
 
-              # Check if an entry for this pod already exists, and update or append
-              if grep -q "$POD_NAME" "$HOSTS_FILE"; then
-                # Replace existing entry for this pod
-                sed -i "/$POD_NAME/d" "$HOSTS_FILE"
-              fi
-              # Add the current pod's IP and name to the hosts file
+              # Remove old entry for the current pod, if exists
+              sed "/$POD_NAME/d" "$HOSTS_FILE" > /tmp/hosts && mv /tmp/hosts "$HOSTS_FILE"
+
+              # Add current pod entry
               echo "$POD_IP $POD_NAME" >> "$HOSTS_FILE"
+
+
+
+
           volumeMounts:
           - name: hosts
             mountPath: /mnt
