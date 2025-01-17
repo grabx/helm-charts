@@ -71,6 +71,8 @@ spec:
           env:
           - name: HOSTALIASES
             value: /mnt/hosts
+          - name: CUSTOM_HOSTFILE_PATH
+            value: /mnt/hosts
           - name: MY_NODE_NAME
             valueFrom:
               fieldRef:
@@ -98,9 +100,15 @@ spec:
             mountPath: /home/mlog/shared
           - name: hosts
             mountPath: /mnt
+          - name: custom
+            mountPath: /home/mlog/server/bin/mlogistics
+            subPath: mlogistics
           - name: logvol
             mountPath: /home/mlog/local/log
       volumes:
+        - name: custom
+          configMap:
+            name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}-cm
         - name: shared
           persistentVolumeClaim:
             claimName: mlogistics-shared
