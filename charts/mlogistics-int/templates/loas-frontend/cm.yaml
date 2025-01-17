@@ -19,7 +19,7 @@ data:
     shadow:         files systemd
     gshadow:        files systemd
 
-    hosts:          files /mnt/hosts dns
+    hosts:          /mnt/hosts files dns
     networks:       files
 
     protocols:      db files
