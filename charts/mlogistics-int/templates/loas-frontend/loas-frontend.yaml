@@ -33,34 +33,6 @@ spec:
       serviceAccountName: {{ include "mlogistics.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.loasfrontend.securityContext | nindent 8 }}
-      # initContainers:
-      #   - name: init-hosts
-      #     image: bitnami/kubectl
-      #     securityContext:
-      #       runAsUser: 0  # Run as root to set permissions
-      #     command:
-      #       - /bin/sh
-      #       - -c
-      #       - |
-      #         HOSTS_FILE="/mnt/hosts"
-      #         POD_NAME=$(hostname)
-      #         POD_IP=$(hostname -i)
-
-      #         # Ensure localhost exists
-      #         if ! grep -q "127.0.0.1 localhost" "$HOSTS_FILE"; then
-      #           echo "127.0.0.1 localhost" >> "$HOSTS_FILE"
-      #         fi
-
-      #         # Check if an entry for this pod already exists, and update or append
-      #         if grep -q "$POD_NAME" "$HOSTS_FILE"; then
-      #           # Replace existing entry for this pod
-      #           sed -i "/$POD_NAME/d" "$HOSTS_FILE"
-      #         fi
-      #         # Add the current pod's IP and name to the hosts file
-      #         echo "$POD_IP $POD_NAME" >> "$HOSTS_FILE"
-      #     volumeMounts:
-      #     - name: hosts
-      #       mountPath: /mnt
       containers:
         - name: {{ .Chart.Name }}-{{ .Values.loasfrontend.name }}-main
           securityContext:
@@ -71,8 +43,6 @@ spec:
           - containerPort: 8080
             protocol: TCP
           env:
-          # - name: CUSTOM_HOSTFILE_PATH
-          #   value: /mnt/hosts
           - name: MY_NODE_NAME
             valueFrom:
               fieldRef:
@@ -98,17 +68,12 @@ spec:
           volumeMounts:
           - name: shared
             mountPath: /home/mlog/shared
-          - name: hosts
-            mountPath: /mnt
           - name: logvol
             mountPath: /home/mlog/local/log
       volumes:
         - name: shared
           persistentVolumeClaim:
-            claimName: mlogistics-shared
-        # - name: hosts
-        #   persistentVolumeClaim:
-        #     claimName: mlogistics-hosts   
+            claimName: mlogistics-shared 
         - name: logvol
           emptyDir: {}
       {{- with .Values.nodeSelector }}
