@@ -1,12 +1,11 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}
+  name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}-dns
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "mlogistics.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.loasfrontend.replicas | default .Values.replicaCount }}
   {{- end }}
@@ -20,16 +19,12 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        component: {{ .Values.loasfrontend.name }}
+        component: {{ .Values.loasfrontend.name }}-dns
         {{- include "mlogistics.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       serviceAccountName: {{ include "mlogistics.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.loasfrontend.securityContext | nindent 8 }}
@@ -42,14 +37,9 @@ spec:
             - /bin/sh
             - -c
             - |
-              HOSTS_FILE="/mnt/hosts"
+              HOSTS_FILE="/mnt/dnsmasq.conf"
               POD_NAME=$(hostname)
               POD_IP=$(hostname -i)
-
-              # Ensure localhost exists
-              if ! grep -q "127.0.0.1 localhost" "$HOSTS_FILE"; then
-                echo "127.0.0.1 localhost" >> "$HOSTS_FILE"
-              fi
 
               # Check if an entry for this pod already exists, and update or append
               if grep -q "$POD_NAME" "$HOSTS_FILE"; then
@@ -57,67 +47,39 @@ spec:
                 sed -i "/$POD_NAME/d" "$HOSTS_FILE"
               fi
               # Add the current pod's IP and name to the hosts file
-              echo "$POD_IP $POD_NAME" >> "$HOSTS_FILE"
+              echo "address=/$POD_NAME/$POD_IP" >> "$HOSTS_FILE"
+
+              # Ensure localhost exists
+              if ! grep -q "10.250.0.10" "$HOSTS_FILE"; then
+                echo "server=/cluster.local/10.250.0.10" >> "$HOSTS_FILE"
+              fi
           volumeMounts:
           - name: hosts
             mountPath: /mnt
       containers:
-        - name: {{ .Chart.Name }}-{{ .Values.loasfrontend.name }}-main
+        - name: {{ .Chart.Name }}-{{ .Values.loasfrontend.name }}-dns
           securityContext:
             {{- toYaml .Values.loasfrontend.securityContext | nindent 12 }}
-          image: "{{ .Values.loasfrontend.image.name }}:{{ .Values.loasfrontend.image.tag | default .Chart.AppVersion }}"
+          image: "4km3/dnsmasq:edge"
           imagePullPolicy: {{ .Values.loasfrontend.image.pullPolicy }}
+          command: 
+          - "/usr/sbin/dnsmasq"
+          - "-C"
+          - "/mnt/dnsmasq.conf"
           ports:
-          - containerPort: 8080
+          - containerPort: 53
+            protocol: UDP
+          - containerPort: 53
             protocol: TCP
-          env:
-          # - name: CUSTOM_HOSTFILE_PATH
-          #   value: /mnt/hosts
-          - name: MY_NODE_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
-          - name: MY_POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: MY_POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: MY_POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-          - name: MY_POD_SERVICE_ACCOUNT
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.serviceAccountName
           resources:
             {{- toYaml .Values.loasfrontend.resources | nindent 12 }}
           volumeMounts:
-          - name: shared
-            mountPath: /home/mlog/shared
           - name: hosts
             mountPath: /mnt
-          - name: custom
-            mountPath: /home/mlog/server/bin/mlogistics
-            subPath: mlogistics
-          - name: logvol
-            mountPath: /home/mlog/local/log
       volumes:
-        - name: custom
-          configMap:
-            name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}-cm
-            defaultMode: 0777
-        - name: shared
-          persistentVolumeClaim:
-            claimName: mlogistics-shared
         - name: hosts
           persistentVolumeClaim:
-            claimName: mlogistics-hosts   
-        - name: logvol
-          emptyDir: {}
+            claimName: mlogistics-hosts
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
