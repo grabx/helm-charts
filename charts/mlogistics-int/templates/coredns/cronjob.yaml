@@ -28,7 +28,7 @@ spec:
                 pod_name=$(kubectl get pod -l component=loasfrontend -o jsonpath="{range .items[?(@.status.podIP=='${pod}')]}{.metadata.name}{end}")
                 echo "    $pod ${pod_name}.${CUSTOM_DOMAIN}" >> /tmp/mlog.override
               done
-              echo "    fallthrough >> /tmp/mlog.orverride
+              echo "    fallthrough" >> /tmp/mlog.orverride
               echo "}" >> /tmp/mlog.orverride
 
               kubectl create configmap coredns-custom --from-file=/tmp/mlog.orverride -n kube-system -o yaml --dry-run | kubectl apply -f -
