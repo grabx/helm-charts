@@ -40,14 +40,6 @@ spec:
             fsGroup: 0
           image: bitnami/kubectl
           command:
-            # - /bin/sh
-            # - -c
-            # - |
-            #   echo "127.0.0.1 localhost" > /mnt/hosts
-            #   for pod in $(kubectl get pods -l component=loasfrontend -o jsonpath='{.items[*].status.podIP}'); do
-            #     pod_name=$(kubectl get pod -l component=loasfrontend -o jsonpath="{range .items[?(@.status.podIP=='${pod}')]}{.metadata.name}{end}")
-            #     echo "$pod $pod_name" >> /mnt/hosts
-            #   done
             - /bin/sh
             - -c
             - |
@@ -67,11 +59,6 @@ spec:
               fi
               # Add the current pod's IP and name to the hosts file
               echo "$POD_IP $POD_NAME" >> "$HOSTS_FILE"
-
-
-
-
-
           volumeMounts:
           - name: hosts
             mountPath: /mnt
@@ -114,15 +101,9 @@ spec:
             mountPath: /home/mlog/shared
           - name: hosts
             mountPath: /mnt
-          - name: nsswitch
-            mountPath: /etc/nsswitch.conf
-            subPath: nsswitch.conf
           - name: logvol
             mountPath: /home/mlog/local/log
       volumes:
-        - name: nsswitch
-          configMap:
-            name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}-cm
         - name: shared
           persistentVolumeClaim:
             claimName: mlogistics-shared
