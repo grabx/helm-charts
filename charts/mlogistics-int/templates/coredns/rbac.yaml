@@ -34,7 +34,7 @@ rules:
   - apiGroups: [""]
     resources: ["configmaps"]
     resourceNames: ["coredns-custom"]
-    verbs: ["get", "list", "update", "create"]
+    verbs: ["get", "list", "update", "create", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
