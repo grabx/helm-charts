@@ -1,0 +1,53 @@
+{{- if .Values.azure.dnsWorkaround.enabled -}}
+# Allows the service account to read pods in its own namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .Release.Namespace | quote }}
+  name: pod-reader
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: {{ .Release.Namespace | quote }}
+  name: pod-reader-binding
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "mlogistics.serviceAccountName" . }}
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+# Allows editing and updating of config maps in kube-system (DANGEROUS IF ABUSED)
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: kube-system
+  name: cm-updater-role
+rules:
+  - apiGroups: [""]
+    resources: ["configMaps"]
+    resourceNames: ["coredns-custom"]
+    verbs: ["get", "list", "update", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: kube-system
+  name: cm-updater-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cm-updater-role # The name of the Role created above
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "mlogistics.serviceAccountName" . }} # Name of the service account
+    namespace: {{ .Release.Namespace | quote }} # Namespace of the service account
+{{- end}}
+

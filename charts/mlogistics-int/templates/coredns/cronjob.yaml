@@ -1,0 +1,36 @@
+{{- if .Values.azure.dnsWorkaround.enabled -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ include "mlogistics.serviceAccountName" . }}
+          containers:
+          - name: update-dns-records
+            image: bitnami/kubectl
+            env:
+            - name: CUSTOM_DOMAIN
+              value: {{ .Values.azure.dnsWorkaround.customDomain }}
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo -e "hosts {\n" > /tmp/mlog.orverride
+              for pod in $(kubectl get pods -l component=loasfrontend -o jsonpath='{.items[*].status.podIP}'); do
+                pod_name=$(kubectl get pod -l component=loasfrontend -o jsonpath="{range .items[?(@.status.podIP=='${pod}')]}{.metadata.name}{end}")
+                echo "    $pod ${pod_name}.${CUSTOM_DOMAIN}" >> /tmp/mlog.override
+              done
+              echo "    fallthrough >> /tmp/mlog.orverride
+              echo "}" >> /tmp/mlog.orverride
+
+              kubectl create configmap coredns-custom --from-file=/tmp/mlog.orverride -n kube-system -o yaml --dry-run | kubectl apply -f -
+          restartPolicy: OnFailure
+{{- end }}
