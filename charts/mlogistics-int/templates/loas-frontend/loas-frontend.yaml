@@ -71,8 +71,6 @@ spec:
           - containerPort: 8080
             protocol: TCP
           env:
-          - name: HOSTALIASES
-            value: /mnt/hosts
           - name: CUSTOM_HOSTFILE_PATH
             value: /mnt/hosts
           - name: MY_NODE_NAME
