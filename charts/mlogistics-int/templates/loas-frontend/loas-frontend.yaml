@@ -33,6 +33,34 @@ spec:
       serviceAccountName: {{ include "mlogistics.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.loasfrontend.securityContext | nindent 8 }}
+      initContainers:
+        - name: init-hosts
+          image: bitnami/kubectl
+          command:
+            # - /bin/sh
+            # - -c
+            # - |
+            #   echo "127.0.0.1 localhost" > /mnt/hosts
+            #   for pod in $(kubectl get pods -l component=loasfrontend -o jsonpath='{.items[*].status.podIP}'); do
+            #     pod_name=$(kubectl get pod -l component=loasfrontend -o jsonpath="{range .items[?(@.status.podIP=='${pod}')]}{.metadata.name}{end}")
+            #     echo "$pod $pod_name" >> /mnt/hosts
+            #   done
+            - /bin/sh
+            - -c
+            - |
+              # Path to the shared hosts file
+              HOSTS_FILE="/mnt/hosts"
+
+              # Ensure localhost is present if not already included
+              if ! grep -q "127.0.0.1 localhost" "$HOSTS_FILE"; then
+                echo "127.0.0.1 localhost" >> "$HOSTS_FILE"
+              fi
+
+              # Append the pod's hostname and IP to the hosts file
+              echo "$(hostname -i) $(hostname)" >> "$HOSTS_FILE"
+          volumeMounts:
+          - name: hosts
+            mountPath: /mnt
       containers:
         - name: {{ .Chart.Name }}-{{ .Values.loasfrontend.name }}-main
           securityContext:
@@ -68,12 +96,18 @@ spec:
           volumeMounts:
           - name: shared
             mountPath: /home/mlog/shared
+          - name: hosts
+            mountPath: /etc/hosts
+            subPath: hosts
           - name: logvol
             mountPath: /home/mlog/local/log
       volumes:
         - name: shared
           persistentVolumeClaim:
-            claimName: mlogistics-shared   
+            claimName: mlogistics-shared
+        - name: hosts
+          persistentVolumeClaim:
+            claimName: mlogistics-hosts   
         - name: logvol
           emptyDir: {}
       {{- with .Values.nodeSelector }}
