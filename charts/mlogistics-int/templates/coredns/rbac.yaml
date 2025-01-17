@@ -32,7 +32,7 @@ metadata:
   name: cm-updater-role
 rules:
   - apiGroups: [""]
-    resources: ["configMaps"]
+    resources: ["configmaps"]
     resourceNames: ["coredns-custom"]
     verbs: ["get", "list", "update", "create"]
 ---

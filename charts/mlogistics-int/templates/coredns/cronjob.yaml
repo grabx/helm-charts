@@ -32,5 +32,5 @@ spec:
               echo "}" >> /tmp/mlog.override
 
               kubectl create configmap coredns-custom --from-file=/tmp/mlog.override -n kube-system -o yaml --dry-run | kubectl apply -f -
-          restartPolicy: OnFailure
+          restartPolicy: Never
 {{- end }}
