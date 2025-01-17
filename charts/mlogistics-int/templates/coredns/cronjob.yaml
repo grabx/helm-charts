@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}
+  name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}-cronjob
   namespace: {{ .Release.Namespace | quote }}
 spec:
   schedule: "* * * * *"
