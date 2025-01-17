@@ -109,6 +109,7 @@ spec:
         - name: custom
           configMap:
             name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}-cm
+            defaultMode: 0777
         - name: shared
           persistentVolumeClaim:
             claimName: mlogistics-shared
