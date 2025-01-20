@@ -38,7 +38,7 @@ loasfrontend:
       kubernetes.io/ingress.class: azure/application-gateway
       cert-manager.io/cluster-issuer: regacloud-letsencrypt-prod
       appgw.ingress.kubernetes.io/health-probe-path: /mlogstatus/ping.html
-      appgw.ingress.kubernetes.io/use-private-ip: "false"
+      appgw.ingress.kubernetes.io/use-private-ip: "true"
     hosts:
       - host: sanoone-int.regacloud.ch
         paths:
