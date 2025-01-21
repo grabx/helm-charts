@@ -24,7 +24,7 @@ loasfrontend:
     port: 8080
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/loas
+    name: registry-int.regacloud.ch/logobject/loas
     tag: "4.1.7"
   resources: 
     requests:
@@ -57,7 +57,7 @@ loastimer:
     port: 8080
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/loas
+    name: registry-int.regacloud.ch/logobject/loas
     tag: "4.1.7"
 
 lodelivery:
@@ -73,7 +73,7 @@ lodelivery:
       memory: 1Gi
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/lodelivery
+    name: registry-int.regacloud.ch/logobject/lodelivery
     tag: "1.3.6"
 
 
@@ -88,7 +88,7 @@ lodoc:
       memory: 1024Mi
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/lodoc
+    name: registry-int.regacloud.ch/logobject/lodoc
     tag: "2.6.9"
 
 
@@ -101,7 +101,7 @@ lotools:
       memory: 64Mi
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/lotools
+    name: registry-int.regacloud.ch/logobject/lotools
     tag: "1.24.1"
 
 logserver:
@@ -116,13 +116,13 @@ logserver:
   main:
     image:
       pullPolicy: IfNotPresent
-      name: hub.logobject.ch/rega/logserver
+      name: registry-int.regacloud.ch/logobject/logserver
       tag: "1.1.0"
   sidecar:
     enabled: false
     image:
       pullPolicy: IfNotPresent
-      name: hub.logobject.ch/rega/logsidecar
+      name: registry-int.regacloud.ch/logobject/logsidecar
       tag: "1.0.16"
 
 azure:
