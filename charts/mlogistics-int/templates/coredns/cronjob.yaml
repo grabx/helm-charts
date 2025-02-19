@@ -21,6 +21,8 @@ spec:
           containers:
           - name: update-dns-records
             image: bitnami/kubectl:1.30
+          resources:
+            {{- toYaml .Values.azure.dnsWorkaround.cronJob.resources | nindent 12 }}
             securityContext:
               allowPrivilegeEscalation: false
               runAsNonRoot: true
