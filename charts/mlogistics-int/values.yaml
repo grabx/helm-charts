@@ -166,7 +166,8 @@ podSecurityContext:
 
 securityContext:
   runAsUser: 1050
-  #runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
   #readOnlyRootFilesystem: true
   # capabilities:
   #   drop:

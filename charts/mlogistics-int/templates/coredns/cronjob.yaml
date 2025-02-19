@@ -12,6 +12,11 @@ spec:
     spec:
       template:
         spec:
+          metadata:
+            labels:
+              {{- with .Values.podLabels }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
           serviceAccountName: {{ include "mlogistics.serviceAccountName" . }}
           containers:
           - name: update-dns-records
