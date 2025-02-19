@@ -169,6 +169,8 @@ podLabels:
 
 podSecurityContext:
   fsGroup: 1050
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
 
 securityContext:
   runAsUser: 1050
