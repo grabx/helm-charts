@@ -1,6 +1,6 @@
 apiVersion: v2
-version: 1.1.78
-appVersion: 1.1.78
+version: 1.1.79
+appVersion: 1.1.79
 name: mlogistics-int
 description: mLogistics@K8S
 type: application
