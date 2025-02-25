@@ -72,20 +72,20 @@ spec:
               fieldRef:
                 fieldPath: spec.serviceAccountName
           livenessProbe:
-            tcpSocket:
-              port: 8010
-            initialDelaySeconds: 5
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
+            exec:
+              command: 
+              - sh
+              - -c
+              - "netstat -aon | grep '8010'"
+            initialDelaySeconds: 20
             periodSeconds: 10
           readinessProbe:
-            tcpSocket:
-              port: 8010
-            initialDelaySeconds: 5
-            timeoutSeconds: 2
-            successThreshold: 1
-            failureThreshold: 10
+            exec:
+              command: 
+              - sh
+              - -c
+              - "netstat -aon | grep '8010'"
+            initialDelaySeconds: 20
             periodSeconds: 10
           resources:
             {{- toYaml .Values.logserver.resources | nindent 12 }}
