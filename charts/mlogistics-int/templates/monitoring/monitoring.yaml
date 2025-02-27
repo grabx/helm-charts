@@ -1,0 +1,49 @@
+{{- if .Values.monitoring.enabled -}}
+---
+# Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.monitoring.name }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "mlogistics.labels" . | nindent 4 }}
+type: Opaque
+data:
+  password: {{ .Values.monitoring.smtpValue }}
+---
+# AlertManagerConfig  {{ .Values.monitoring.name }}
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: {{ .Values.monitoring.name }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  route:
+    groupBy: ['job']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: {{ .Values.monitoring.name | quote }}
+  receivers: 
+    {{- toYaml .Values.monitoring.receivers | nindent 4 }}
+{{- end }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Values.monitoring.name }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- toYaml .Values.monitoring.prometheusLabel | nindent 4 }}
+spec:
+  groups:
+  - name: {{ .Values.monitoring.alerts.group }}
+    rules:
+    {{- toYaml .Values.monitoring.alerts.rules | nindent 4 }}
+---
+
+
+# {{ if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" -}}
+
+# {{ end -}}

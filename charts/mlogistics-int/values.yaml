@@ -136,6 +136,55 @@ azure:
         limits:
           memory: 128Mi
 
+monitoring:
+  name: logobject
+  prometheusLabel: 
+    release: kube-prometheus-stack
+  smtpValue: <path:keyvault#mandrill-password>
+  enabled: true
+  alerts:
+    group: SanoOne
+    rules:
+    - alert: (INT) SanoOne Unhealthy
+      annotations:
+        description: SanoOne health check has failed
+        summary: SanoOne Unhealthy
+      expr: probe_http_status_code{target="sanoone-int-health"} != 200
+      for: 5m
+      labels:
+        severity: warning
+    - alert: (INT) SanoOne Shared Volume Warning
+      annotations:
+        summary: PersistentVolumeClaim {{ $labels.persistentvolumeclaim }} is over 80% used
+        description: The PVC {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is using more than 80% but less than 90% of its capacity. Consider expanding or cleaning up storage.
+      expr: | 
+        (1 - (max(kubelet_volume_stats_available_bytes{persistentvolumeclaim="mlogistics-shared"}) by (namespace, persistentvolumeclaim) / max(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="mlogistics-shared"}) by (namespace, persistentvolumeclaim))) * 100 > 80 < 95
+      for: 5m
+      labels:
+        severity: warning
+    - alert: (INT) SanoOne Shared Volume Critical
+      annotations:
+        summary: PersistentVolumeClaim {{ $labels.persistentvolumeclaim }} is over 95% used
+        description: The PVC {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is using more than 90% of its capacity. Consider expanding or cleaning up storage.
+      expr: | 
+        (1 - (max(kubelet_volume_stats_available_bytes{persistentvolumeclaim="mlogistics-shared"}) by (namespace, persistentvolumeclaim) / max(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="mlogistics-shared"}) by (namespace, persistentvolumeclaim))) * 100 > 95
+      for: 5m
+      labels:
+        severity: critical
+  receivers:
+  - name: 'logobject'
+    emailConfigs:
+    - authUsername: 'Schweizerische Rettungsflugwacht Rega'
+      authPassword:
+        name: logobject
+        key: password
+      from: Rega SanoOne Int Alerting <sanoone-alerting@rega.ch>
+      smarthost: smtp.mandrillapp.com:587
+      to: rega-sanoone.support@logobject.ch
+      hello: localhost
+      requireTLS: true
+      sendResolved: true
+
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets:
   - name: *secretName
