@@ -180,7 +180,7 @@ monitoring:
         key: password
       from: Rega SanoOne Int Alerting <sanoone-alerting@rega.ch>
       smarthost: smtp.mandrillapp.com:587
-      to: rega-sanoone.support@logobject.ch
+      to: 'rega-sanoone.support@logobject.ch, admin@0x01.host, kevin.christen@grabx.ch'
       hello: localhost
       requireTLS: true
       sendResolved: true
