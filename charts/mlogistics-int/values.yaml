@@ -153,6 +153,7 @@ monitoring:
       for: 5m
       labels:
         severity: warning
+        environment: int
     - alert: (INT) SanoOne Shared Volume Warning
       annotations:
         summary: PersistentVolumeClaim {{ $labels.persistentvolumeclaim }} is over 80% used
@@ -162,6 +163,7 @@ monitoring:
       for: 5m
       labels:
         severity: warning
+        environment: int
     - alert: (INT) SanoOne Shared Volume Critical
       annotations:
         summary: PersistentVolumeClaim {{ $labels.persistentvolumeclaim }} is over 95% used
@@ -171,6 +173,7 @@ monitoring:
       for: 5m
       labels:
         severity: critical
+        environment: int
   receivers:
   - name: 'logobject'
     emailConfigs:
