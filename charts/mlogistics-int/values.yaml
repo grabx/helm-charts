@@ -89,7 +89,7 @@ lodoc:
   image: 
     pullPolicy: IfNotPresent
     name: registry-int.regacloud.ch/logobject/lodoc
-    tag: "2.6.10"
+    tag: "2.8.0"
 
 
 lotools:
