@@ -38,7 +38,9 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-{{ .Values.lodoc.name }}-main
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            runAsUser: 1050
+            allowPrivilegeEscalation: true
+            runAsNonRoot: true
           image: "{{ .Values.lodoc.image.name }}:{{ .Values.lodoc.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.lodoc.image.pullPolicy }}
           ports:
