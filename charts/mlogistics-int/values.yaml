@@ -85,7 +85,7 @@ lodoc:
     requests:
       memory: 256Mi
     limits:
-      memory: 1Gi
+      memory: 2Gi
   image: 
     pullPolicy: IfNotPresent
     name: registry-int.regacloud.ch/logobject/lodoc
