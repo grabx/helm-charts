@@ -26,12 +26,14 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      automountServiceAccountToken: false
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "mlogistics.serviceAccountName" . }}
       securityContext:
+        allowPrivilegeEscalation: false
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}-{{ .Values.lodoc.name }}-main
@@ -63,6 +65,22 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.serviceAccountName
+          livenessProbe:
+            tcpSocket:
+              port: 9080
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 9080
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 10
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.lodoc.resources | nindent 12 }}
           volumeMounts:

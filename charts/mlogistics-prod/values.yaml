@@ -18,14 +18,14 @@ registry:
 loasfrontend:
   securityContext:
     runAsUser: 1050
-  replicas: 1
+  replicas: 2
   name: loasfrontend
   service:
     port: 8080
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/loas
-    tag: "4.1.7"
+    name: registry.regacloud.ch/logobject/loas
+    tag: "4.1.9"
   resources: 
     requests:
       memory: 256Mi
@@ -38,7 +38,7 @@ loasfrontend:
       kubernetes.io/ingress.class: azure/application-gateway
       cert-manager.io/cluster-issuer: regacloud-letsencrypt-prod
       appgw.ingress.kubernetes.io/health-probe-path: /mlogstatus/ping.html
-      appgw.ingress.kubernetes.io/use-private-ip: "false"
+      appgw.ingress.kubernetes.io/use-private-ip: "true"
     hosts:
       - host: sanoone-int.regacloud.ch
         paths:
@@ -57,8 +57,8 @@ loastimer:
     port: 8080
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/loas
-    tag: "4.1.7"
+    name: registry.regacloud.ch/logobject/loas
+    tag: "4.1.9"
 
 lodelivery:
   name: lodelivery
@@ -73,8 +73,8 @@ lodelivery:
       memory: 1Gi
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/lodelivery
-    tag: "1.3.3"
+    name: registry.regacloud.ch/logobject/lodelivery
+    tag: "1.3.6"
 
 
 lodoc:
@@ -85,11 +85,11 @@ lodoc:
     requests:
       memory: 256Mi
     limits:
-      memory: 1024Mi
+      memory: 2Gi
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/lodoc
-    tag: "2.6.9"
+    name: registry.regacloud.ch/logobject/lodoc
+    tag: "2.8.4.2"
 
 
 lotools:
@@ -101,7 +101,7 @@ lotools:
       memory: 64Mi
   image: 
     pullPolicy: IfNotPresent
-    name: hub.logobject.ch/rega/lotools
+    name: registry.regacloud.ch/logobject/lotools
     tag: "1.24.1"
 
 logserver:
@@ -116,15 +116,77 @@ logserver:
   main:
     image:
       pullPolicy: IfNotPresent
-      name: hub.logobject.ch/rega/logserver
-      tag: "1.1.0"
+      name: registry.regacloud.ch/logobject/logserver
+      tag: "1.1.1"
   sidecar:
     enabled: false
     image:
       pullPolicy: IfNotPresent
-      name: hub.logobject.ch/rega/logsidecar
+      name: registry.regacloud.ch/logobject/logsidecar
       tag: "1.0.16"
 
+azure:
+  dnsWorkaround:
+    enabled: true
+    customDomain: regaint
+    cronJob:
+      resources:
+        requests:
+          memory: 32Mi
+        limits:
+          memory: 128Mi
+
+monitoring:
+  name: logobject
+  prometheusLabel: 
+    release: kube-prometheus-stack
+  smtpValue: <path:keyvault#mandrill-password>
+  enabled: true
+  alerts:
+    group: SanoOne
+    rules:
+    - alert: (INT) SanoOne Unhealthy
+      annotations:
+        description: SanoOne health check has failed
+        summary: SanoOne Unhealthy
+      expr: probe_http_status_code{target="sanoone-int-health"} != 200
+      for: 5m
+      labels:
+        severity: warning
+        environment: int
+    - alert: (INT) SanoOne Shared Volume Warning
+      annotations:
+        summary: PersistentVolumeClaim {{ $labels.persistentvolumeclaim }} is over 80% used
+        description: The PVC {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is using more than 80% but less than 90% of its capacity. Consider expanding or cleaning up storage.
+      expr: | 
+        (1 - (max(kubelet_volume_stats_available_bytes{persistentvolumeclaim="mlogistics-shared"}) by (namespace, persistentvolumeclaim) / max(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="mlogistics-shared"}) by (namespace, persistentvolumeclaim))) * 100 > 80 < 95
+      for: 5m
+      labels:
+        severity: warning
+        environment: int
+    - alert: (INT) SanoOne Shared Volume Critical
+      annotations:
+        summary: PersistentVolumeClaim {{ $labels.persistentvolumeclaim }} is over 95% used
+        description: The PVC {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is using more than 90% of its capacity. Consider expanding or cleaning up storage.
+      expr: | 
+        (1 - (max(kubelet_volume_stats_available_bytes{persistentvolumeclaim="mlogistics-shared"}) by (namespace, persistentvolumeclaim) / max(kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="mlogistics-shared"}) by (namespace, persistentvolumeclaim))) * 100 > 95
+      for: 5m
+      labels:
+        severity: critical
+        environment: int
+  receivers:
+  - name: 'logobject'
+    emailConfigs:
+    - authUsername: 'Schweizerische Rettungsflugwacht Rega'
+      authPassword:
+        name: logobject
+        key: password
+      from: Rega_SanoOne_Int <kubernetesalerting@rega.ch>
+      smarthost: smtp.mandrillapp.com:587
+      to: 'rega-sanoone.support@logobject.ch'
+      hello: localhost
+      requireTLS: true
+      sendResolved: true
 
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets:
@@ -159,10 +221,13 @@ podLabels:
 
 podSecurityContext:
   fsGroup: 1050
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
 
 securityContext:
   runAsUser: 1050
-  #runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
   #readOnlyRootFilesystem: true
   # capabilities:
   #   drop:

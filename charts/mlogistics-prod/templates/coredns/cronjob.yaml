@@ -1,0 +1,47 @@
+{{- if .Values.azure.dnsWorkaround.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "mlogistics.fullname" . }}-{{ .Values.loasfrontend.name }}-cronjob
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- with .Values.podLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        spec:
+          automountServiceAccountToken: true # needed to communicate with API
+          serviceAccountName: {{ include "mlogistics.serviceAccountName" . }}
+          containers:
+          - name: update-dns-records
+            image: bitnami/kubectl:1.30
+            resources:
+              {{- toYaml .Values.azure.dnsWorkaround.cronJob.resources | nindent 14 }}
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsNonRoot: true
+            env:
+            - name: CUSTOM_DOMAIN
+              value: {{ .Values.azure.dnsWorkaround.customDomain }}
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "hosts {" > /tmp/mlog.override
+              for pod in $(kubectl get pods -l component=loasfrontend -o jsonpath='{.items[*].status.podIP}'); do
+                pod_name=$(kubectl get pod -l component=loasfrontend -o jsonpath="{range .items[?(@.status.podIP=='${pod}')]}{.metadata.name}{end}")
+                echo "    $pod ${pod_name}.${CUSTOM_DOMAIN}" >> /tmp/mlog.override
+              done
+              echo "    fallthrough" >> /tmp/mlog.override
+              echo "}" >> /tmp/mlog.override
+
+              kubectl create configmap coredns-custom --from-file=/tmp/mlog.override -n kube-system -o yaml --dry-run | kubectl apply -f -
+          restartPolicy: Never
+{{- end }}
