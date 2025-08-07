@@ -40,13 +40,13 @@ loasfrontend:
       appgw.ingress.kubernetes.io/health-probe-path: /mlogstatus/ping.html
       appgw.ingress.kubernetes.io/use-private-ip: "true"
     hosts:
-      - host: sanoone-int.regacloud.ch
+      - host: sanoone.regacloud.ch
         paths:
           - path: /
             pathType: ImplementationSpecific
     tls: 
     - hosts:
-      - sanoone-int.regacloud.ch
+      - sanoone.regacloud.ch
       secretName: sanoone
 
 
