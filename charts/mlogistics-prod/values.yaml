@@ -140,7 +140,7 @@ monitoring:
   name: logobject
   prometheusLabel: 
     release: kube-prometheus-stack
-  smtpValue: <path:keyvault#mandrill-password>
+  smtpValue: <path:p-akv-aksrega#mandrillapp-smtp>
   enabled: true
   alerts:
     group: SanoOne
