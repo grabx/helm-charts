@@ -13,7 +13,7 @@ registry:
   secretName: &secretName regcred
   # This is a special syntax used for argocd's vault plugin. you would ordiniarily put your b64 encoded credential here.
   # We however use the argocd vault plugin to load secret values from external sources
-  credentials: <path:keyvault#logobject-registry-credentials>
+  credentials: <path:p-akv-aksrega#logobject-registry-credentials>
 
 loasfrontend:
   securityContext:
