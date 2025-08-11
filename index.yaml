@@ -1304,6 +1304,26 @@ entries:
     version: 1.1.28
   mlogistics-prod:
   - apiVersion: v2
+    appVersion: 1.1.33
+    created: "2025-08-11T13:24:35.833453333Z"
+    description: mLogistics@K8S
+    digest: e16e13de14973786ba18d0f435c1e1fa4ced3695f3fc5478d5f400011be8ed79
+    home: https://hub.logobject.ch/rega
+    maintainers:
+    - email: tiziano.mengotti@logobject.ch
+      name: Tiziano Mengotti
+    - email: renzo.dani@logobject.ch
+      name: Renzo Dani
+    - email: kevin.christen@grabx.ch
+      name: Kevin Christen
+    name: mlogistics-prod
+    sources:
+    - https://hub.logobject.ch/rega
+    type: application
+    urls:
+    - https://github.com/grabx/helm-charts/releases/download/mlogistics-prod-1.1.33/mlogistics-prod-1.1.33.tgz
+    version: 1.1.33
+  - apiVersion: v2
     appVersion: 1.1.32
     created: "2025-08-07T07:40:12.376355569Z"
     description: mLogistics@K8S
@@ -1403,4 +1423,4 @@ entries:
     urls:
     - https://github.com/grabx/helm-charts/releases/download/mlogistics-prod-1.1.28/mlogistics-prod-1.1.28.tgz
     version: 1.1.28
-generated: "2025-08-07T07:40:12.376521007Z"
+generated: "2025-08-11T13:24:35.833618684Z"
