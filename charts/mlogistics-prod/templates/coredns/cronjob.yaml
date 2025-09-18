@@ -21,7 +21,7 @@ spec:
           serviceAccountName: {{ include "mlogistics.serviceAccountName" . }}
           containers:
           - name: update-dns-records
-            image: bitnami/kubectl:1.30
+            image: bitnamilegacy/kubectl:1.30
             resources:
               {{- toYaml .Values.azure.dnsWorkaround.cronJob.resources | nindent 14 }}
             securityContext:
