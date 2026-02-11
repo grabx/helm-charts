@@ -18,7 +18,7 @@ registry:
 loasfrontend:
   securityContext:
     runAsUser: 1050
-  replicas: 2
+  replicas: 1
   name: loasfrontend
   service:
     port: 8080
