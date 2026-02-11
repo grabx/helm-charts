@@ -117,7 +117,7 @@ logserver:
     image:
       pullPolicy: IfNotPresent
       name: registry-int.regacloud.ch/logobject/logserver
-      tag: "1.1.1"
+      tag: "1.1.4"
   sidecar:
     enabled: false
     image:
