@@ -23,6 +23,26 @@ entries:
     version: 1.1.24
   mlogistics-int:
   - apiVersion: v2
+    appVersion: 1.1.101
+    created: "2026-03-19T12:13:55.18092228Z"
+    description: mLogistics@K8S
+    digest: b91bdeaad456647a5f8942d3d917db772f2d1c509c50fcd943cbb7b4181ba1e7
+    home: https://hub.logobject.ch/rega
+    maintainers:
+    - email: tiziano.mengotti@logobject.ch
+      name: Tiziano Mengotti
+    - email: renzo.dani@logobject.ch
+      name: Renzo Dani
+    - email: kevin.christen@grabx.ch
+      name: Kevin Christen
+    name: mlogistics-int
+    sources:
+    - https://hub.logobject.ch/rega
+    type: application
+    urls:
+    - https://github.com/grabx/helm-charts/releases/download/mlogistics-int-1.1.101/mlogistics-int-1.1.101.tgz
+    version: 1.1.101
+  - apiVersion: v2
     appVersion: 1.1.100
     created: "2026-02-11T14:49:12.633930154Z"
     description: mLogistics@K8S
@@ -1444,6 +1464,26 @@ entries:
     version: 1.1.28
   mlogistics-prod:
   - apiVersion: v2
+    appVersion: 1.1.36
+    created: "2026-03-19T12:13:55.332337836Z"
+    description: mLogistics@K8S
+    digest: 44aab46608b2287bf78a345aa926ced94ccfac11714502b9d372b0f78dae18ef
+    home: https://hub.logobject.ch/rega
+    maintainers:
+    - email: tiziano.mengotti@logobject.ch
+      name: Tiziano Mengotti
+    - email: renzo.dani@logobject.ch
+      name: Renzo Dani
+    - email: kevin.christen@grabx.ch
+      name: Kevin Christen
+    name: mlogistics-prod
+    sources:
+    - https://hub.logobject.ch/rega
+    type: application
+    urls:
+    - https://github.com/grabx/helm-charts/releases/download/mlogistics-prod-1.1.36/mlogistics-prod-1.1.36.tgz
+    version: 1.1.36
+  - apiVersion: v2
     appVersion: 1.1.34
     created: "2025-09-18T07:51:48.774678566Z"
     description: mLogistics@K8S
@@ -1583,4 +1623,4 @@ entries:
     urls:
     - https://github.com/grabx/helm-charts/releases/download/mlogistics-prod-1.1.28/mlogistics-prod-1.1.28.tgz
     version: 1.1.28
-generated: "2026-02-11T14:49:12.634229943Z"
+generated: "2026-03-19T12:13:55.332996527Z"
