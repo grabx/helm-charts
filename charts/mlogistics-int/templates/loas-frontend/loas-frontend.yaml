@@ -67,7 +67,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90
             timeoutSeconds: 5
             successThreshold: 1
             failureThreshold: 5
@@ -80,7 +80,7 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 5
+            initialDelaySeconds: 90
             timeoutSeconds: 2
             successThreshold: 1
             failureThreshold: 10
