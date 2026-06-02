@@ -127,7 +127,7 @@ logserver:
 
 azure:
   dnsWorkaround:
-    enabled: true
+    enabled: false
     customDomain: regaint
     cronJob:
       resources:
