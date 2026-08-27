@@ -145,7 +145,7 @@ monitoring:
   alerts:
     group: SanoOne
     rules:
-    - alert: (INT) SanoOne Unhealthy
+    - alert: (PROD) SanoOne Unhealthy
       annotations:
         description: SanoOne health check has failed
         summary: SanoOne Unhealthy
@@ -153,8 +153,8 @@ monitoring:
       for: 5m
       labels:
         severity: warning
-        environment: int
-    - alert: (INT) SanoOne Shared Volume Warning
+        environment: prod
+    - alert: (PROD) SanoOne Shared Volume Warning
       annotations:
         summary: PersistentVolumeClaim {{ $labels.persistentvolumeclaim }} is over 80% used
         description: The PVC {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is using more than 80% but less than 90% of its capacity. Consider expanding or cleaning up storage.
@@ -163,8 +163,8 @@ monitoring:
       for: 5m
       labels:
         severity: warning
-        environment: int
-    - alert: (INT) SanoOne Shared Volume Critical
+        environment: prod
+    - alert: (PROD) SanoOne Shared Volume Critical
       annotations:
         summary: PersistentVolumeClaim {{ $labels.persistentvolumeclaim }} is over 95% used
         description: The PVC {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is using more than 90% of its capacity. Consider expanding or cleaning up storage.
@@ -173,7 +173,7 @@ monitoring:
       for: 5m
       labels:
         severity: critical
-        environment: int
+        environment: prod
   receivers:
   - name: 'logobject'
     emailConfigs:
@@ -181,7 +181,7 @@ monitoring:
       authPassword:
         name: logobject
         key: password
-      from: Rega_SanoOne_Int <kubernetesalerting@rega.ch>
+      from: Rega_SanoOne_Prod <kubernetesalerting@rega.ch>
       smarthost: smtp.mandrillapp.com:587
       to: 'rega-sanoone.support@logobject.ch'
       hello: localhost
