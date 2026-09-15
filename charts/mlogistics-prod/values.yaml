@@ -25,7 +25,7 @@ loasfrontend:
   image: 
     pullPolicy: IfNotPresent
     name: registry.regacloud.ch/logobject/loas
-    tag: "4.1.25"
+    tag: "4.1.39"
   resources: 
     requests:
       memory: 256Mi
@@ -58,7 +58,7 @@ loastimer:
   image: 
     pullPolicy: IfNotPresent
     name: registry.regacloud.ch/logobject/loas
-    tag: "4.1.25"
+    tag: "4.1.39"
 
 lodelivery:
   name: lodelivery
@@ -74,7 +74,7 @@ lodelivery:
   image: 
     pullPolicy: IfNotPresent
     name: registry.regacloud.ch/logobject/lodelivery
-    tag: "1.3.18"
+    tag: "1.3.44"
 
 
 lodoc:
@@ -102,7 +102,7 @@ lotools:
   image: 
     pullPolicy: IfNotPresent
     name: registry.regacloud.ch/logobject/lotools
-    tag: "1.24.17"
+    tag: "1.25.16"
 
 logserver:
   name: logserver
@@ -117,7 +117,7 @@ logserver:
     image:
       pullPolicy: IfNotPresent
       name: registry.regacloud.ch/logobject/logserver
-      tag: "1.1.6"
+      tag: "1.1.37"
   sidecar:
     enabled: false
     image:
