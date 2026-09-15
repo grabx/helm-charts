@@ -7,7 +7,7 @@ replicaCount: 1
 
 persistence:
   storageClassName: azurefile
-  capacity: 5Gi
+  capacity: 20Gi
 
 registry: 
   secretName: &secretName regcred
