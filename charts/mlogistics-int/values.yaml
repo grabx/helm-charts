@@ -203,7 +203,7 @@ serviceAccount:
   automount: true
   # Annotations to add to the service account
   annotations: 
-    azure.workload.identity/client-i§d: "c004fec8-1fb3-4a7b-9b2b-9a06dbb29e1e"
+    azure.workload.identity/client-id: "c004fec8-1fb3-4a7b-9b2b-9a06dbb29e1e"
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
